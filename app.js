@@ -5,6 +5,7 @@ const dialogs = new botbuilder_dialogs.DialogSet()
 let infoCard = require('./cards/infoCard')
 const Pokedex = require('pokedex-promise-v2')
 const P = new Pokedex()
+require('dotenv-extended').load()
 
 // Create server
 let server = restify.createServer()
