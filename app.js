@@ -51,7 +51,7 @@ server.post('/api/messages', (req, res) => {
       <br/>2. 포켓몬 진화단계 조회
       <br/>예를들어 '1'입력 시 검색서비스가 제공됩니다`)
     } else if (context.activity.type === 'message') {
-      if (context.activity.text.match(/hi/ig)) {
+      if (context.activity.text.match(/안녕/ig)) {
         await dc.begin('greetings')
       } else if ((convo.dialogStack.length == '0' && context.activity.text === '1') || context.activity.text.match(/검색/ig)) {
         // need to check dialogStack.length - if it is not, it conflicts with searchPokemon input id == 1
@@ -86,11 +86,11 @@ dialogs.add('partySizePrompt', new botbuilder_dialogs.NumberPrompt())
 // Ask for the user name and then greet them by name.
 dialogs.add('greetings', [
   async function (dc) {
-    await dc.prompt('textPrompt', 'What is your name?')
+    await dc.prompt('textPrompt', '안녕하세요! 이름이 뭐에요?')
   },
   async function (dc, results) {
     var userName = results
-    await dc.context.sendActivity(`Hello ${userName}!`)
+    await dc.context.sendActivity(`${userName}님, 만나서 반갑습니다!`)
     await dc.end() // Ends the dialog
   }
 ])
