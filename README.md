@@ -71,3 +71,25 @@ Azure Web App에서 기본으로 제공하는 Node Version은 6.9.1 입니다. B
 4. 변경사항 확인
 
     1에서 사용했던 CMD 창에서 **node version** 명령어를 입력하면 현재 사용중인 node 버전을 확인할 수 있으며, 잘 변경되었는지 확인할 수 있습니다. 
+
+### Environment Variable Support
+AppId 및 AppPassword 와 같은 Credential 정보는 github같은 공개된 곳에 올리지 않기 위해 .env 파일과 같은 곳에 따로 저장해두고 사용합니다. 이 기능을 사용하기 위해서는 소스코드에 .env라는 파일을 새로 생성하시고, git ignore에 .env를 추가하시기 바랍니다. 
+
+* .env 파일 생성 및 Credential 정보 입력
+
+    ![013](./images/013.PNG)
+
+* gitignore에 .env 추가
+
+    ![014](./images/014.PNG)
+
+* .env 를 이용하기 위한 npm 패키지 설치 및 소스코드에서 사용하기 위해 선언
+    * 패키지 설치
+
+        ```
+        npm install --save dotenv-extended
+        ```
+
+    * 소스코드에서 선언 및 사용
+
+        ![015](./images/015.PNG)
