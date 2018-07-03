@@ -106,7 +106,6 @@ dialogs.add('searchPokemon', [
       await next(args)
     } else {
       await dc.context.sendActivity('포켓몬 검색 서비스입니다.')
-      await dc.context.sendActivity(ActivityTypes.Typing)
       await dc.prompt('textPrompt', `포켓몬 id 혹은 이름을 입력해주세요! 현재 이름검색은 영문명만 지원합니다. :-(
         <br/>id의 경우 1~151 사이의 숫자를 입력해주세요!`)
     }
@@ -134,6 +133,7 @@ dialogs.add('searchPokemon', [
         }).catch(function (error) {
           console.log('There was an ERROR: ', error)
         })
+    await dc.context.sendActivity({type: ActivityTypes.Typing})
     await dc.prompt('textPrompt', `검색하고 싶은 포켓몬 id를 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {
     if (result == '그만') {
@@ -193,6 +193,7 @@ dialogs.add('evolutionStage', [
     }).catch(function (error) {
       console.log('There was an ERROR: ', error)
     })
+    await dc.context.sendActivity({type: ActivityTypes.Typing})
     await dc.prompt('textPrompt', `진화과정이 궁금한 포켓몬 id를 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {
     if (result == '그만') {
