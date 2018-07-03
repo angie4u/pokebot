@@ -157,6 +157,7 @@ dialogs.add('evolutionStage', [
     }
   },
   async function (dc, result, evolutionId) {
+    let messageWithCarouselOfCards
     await P.getPokemonSpeciesByName(result)
     .then(function (result) {
       evolutionInfo.is_baby = result.is_baby
@@ -187,13 +188,14 @@ dialogs.add('evolutionStage', [
         attachments.push(card)
       }, this)
 
-      let messageWithCarouselOfCards = MessageFactory.carousel(attachments)
-      dc.context.sendActivity(messageWithCarouselOfCards)
+      messageWithCarouselOfCards = MessageFactory.carousel(attachments)
+      dc.context.sendActivity({type: ActivityTypes.Typing})
+      return dc.context.sendActivity(messageWithCarouselOfCards)
       // dc.end()
     }).catch(function (error) {
       console.log('There was an ERROR: ', error)
     })
-    await dc.context.sendActivity({type: ActivityTypes.Typing})
+    // await dc.context.sendActivity({type: ActivityTypes.Typing})
     await dc.prompt('textPrompt', `진화과정이 궁금한 포켓몬 id를 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {
     if (result == '그만') {
