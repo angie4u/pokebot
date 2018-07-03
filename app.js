@@ -128,12 +128,11 @@ dialogs.add('searchPokemon', [
         }).then(function (pokemonInfo) {
           pokemonInfo.imageUrl_large = getLargeImgUrl(pokemonInfo.id)
           const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imageUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genera, pokemonInfo.habitat, pokemonInfo.color))
-
-          dc.context.sendActivity({ attachments: [message] })
+          dc.context.sendActivity({type: ActivityTypes.Typing})
+          return dc.context.sendActivity({ attachments: [message] })
         }).catch(function (error) {
           console.log('There was an ERROR: ', error)
         })
-    await dc.context.sendActivity({type: ActivityTypes.Typing})
     await dc.prompt('textPrompt', `검색하고 싶은 포켓몬 id를 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {
     if (result == '그만') {
@@ -191,11 +190,9 @@ dialogs.add('evolutionStage', [
       messageWithCarouselOfCards = MessageFactory.carousel(attachments)
       dc.context.sendActivity({type: ActivityTypes.Typing})
       return dc.context.sendActivity(messageWithCarouselOfCards)
-      // dc.end()
     }).catch(function (error) {
       console.log('There was an ERROR: ', error)
     })
-    // await dc.context.sendActivity({type: ActivityTypes.Typing})
     await dc.prompt('textPrompt', `진화과정이 궁금한 포켓몬 id를 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {
     if (result == '그만') {
