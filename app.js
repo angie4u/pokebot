@@ -111,7 +111,7 @@ dialogs.add('searchPokemon', [
     }
   },
   async function (dc, result) {
-    await P.getPokemonSpeciesByName(result) // with Promise
+    await P.getPokemonSpeciesByName(result.toLowerCase()) // with Promise
         .then(function (response) {
           pokemonInfo.color = response.color.name
           pokemonInfo.id = response.id
@@ -157,7 +157,7 @@ dialogs.add('evolutionStage', [
   },
   async function (dc, result, evolutionId) {
     let messageWithCarouselOfCards
-    await P.getPokemonSpeciesByName(result)
+    await P.getPokemonSpeciesByName(result.toLowerCase())
     .then(function (result) {
       evolutionInfo.is_baby = result.is_baby
 
