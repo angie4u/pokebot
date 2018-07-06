@@ -128,8 +128,21 @@ dialogs.add('searchPokemon', [
         }).then(function (pokemonInfo) {
           pokemonInfo.imageUrl_large = getLargeImgUrl(pokemonInfo.id)
           const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imageUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genera, pokemonInfo.habitat, pokemonInfo.color))
-          dc.context.sendActivity({type: ActivityTypes.Typing})
-          return dc.context.sendActivity({ attachments: [message] })
+
+          if (dc.context.activity.channelId == 'DirectLineClient') {
+            // Kakao Message를 처리하는 부분
+            var msg = 'Id: ' + pokemonInfo.id + '\n'
+            msg += '이름: ' + pokemonInfo.name_kor + '\n'
+            msg += '영문이름: ' + pokemonInfo.name_eng + '\n'
+            msg += '종: ' + pokemonInfo.genera + '\n'
+            msg += '서식지: ' + pokemonInfo.habitat + '\n'
+            msg += '색깔: ' + pokemonInfo.color
+
+            return dc.context.sendActivity(msg)
+          } else {
+            dc.context.sendActivity({type: ActivityTypes.Typing})
+            return dc.context.sendActivity({ attachments: [message] })
+          }
         }).catch(function (error) {
           console.log('There was an ERROR: ', error)
         })
@@ -187,9 +200,19 @@ dialogs.add('evolutionStage', [
         attachments.push(card)
       }, this)
 
-      messageWithCarouselOfCards = MessageFactory.carousel(attachments)
-      dc.context.sendActivity({type: ActivityTypes.Typing})
-      return dc.context.sendActivity(messageWithCarouselOfCards)
+      var msg = ''
+      evolutionStage.forEach(function (data) {
+        msg += data.name + ' >'
+      }, this)
+
+      if (dc.context.activity.channelId == 'DirectLineClient') {
+        dc.context.sendActivity({type: ActivityTypes.Typing})
+        return dc.context.sendActivity(msg)
+      } else {
+        messageWithCarouselOfCards = MessageFactory.carousel(attachments)
+        dc.context.sendActivity({type: ActivityTypes.Typing})
+        return dc.context.sendActivity(messageWithCarouselOfCards)
+      }
     }).catch(function (error) {
       console.log('There was an ERROR: ', error)
     })
