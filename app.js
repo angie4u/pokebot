@@ -128,7 +128,7 @@ dialogs.add('searchPokemon', [
         }).then(function (pokemonInfo) {
           pokemonInfo.imageUrl_large = getLargeImgUrl(pokemonInfo.id)
           const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imageUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genera, pokemonInfo.habitat, pokemonInfo.color))
-
+          console.log(dc.context.activity.channelId)
           if (dc.context.activity.channelId == 'DirectLineClient') {
             // Kakao Message를 처리하는 부분
             var msg = 'Id: ' + pokemonInfo.id + '\n'
