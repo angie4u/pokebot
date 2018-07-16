@@ -46,7 +46,7 @@ server.post('/api/messages', (req, res) => {
     const convo = conversationState.get(context)
     const dc = dialogs.createContext(context, convo)
 
-    if (context.activity.type === 'conversationUpdate' && context.activity.membersAdded[0].name !== 'Bot') {
+    if (context.activity.type === 'conversationUpdate' && context.activity.membersAdded[0].name !== 'Bot' && (context.activity.channelId !== 'directline')) {
       await context.sendActivity(`안녕하세요! Pokemon 정보를 조회할 수 있는 봇 입니다. 원하는 서비스를 선택하세요!
       <br/>1. 포켓몬 검색
       <br/>2. 포켓몬 진화단계 조회
