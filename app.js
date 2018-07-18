@@ -129,20 +129,10 @@ dialogs.add('searchPokemon', [
           pokemonInfo.imageUrl_large = getLargeImgUrl(pokemonInfo.id)
           const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imageUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genera, pokemonInfo.habitat, pokemonInfo.color))
           console.log(dc.context.activity.channelId)
-          if (dc.context.activity.channelId == 'directline') {
-            // Kakao Message를 처리하는 부분
-            var msg = 'Id: ' + pokemonInfo.id + '\n'
-            msg += '이름: ' + pokemonInfo.name_kor + '\n'
-            msg += '영문이름: ' + pokemonInfo.name_eng + '\n'
-            msg += '종: ' + pokemonInfo.genera + '\n'
-            msg += '서식지: ' + pokemonInfo.habitat + '\n'
-            msg += '색깔: ' + pokemonInfo.color
 
-            return dc.context.sendActivity(msg)
-          } else {
-            dc.context.sendActivity({type: ActivityTypes.Typing})
-            return dc.context.sendActivity({ attachments: [message] })
-          }
+          dc.context.sendActivity({type: ActivityTypes.Typing})
+          return dc.context.sendActivity({ attachments: [message] })
+          // }
         }).catch(function (error) {
           console.log('There was an ERROR: ', error)
         })
