@@ -6,6 +6,8 @@ const dialogs = new botbuilder_dialogs.DialogSet()
 let infoCard = require('./cards/infoCard')
 const Pokedex = require('pokedex-promise-v2')
 const P = new Pokedex()
+// const connectdb = require('./database/connectdb')
+const mysql = require('promise-mysql')
 require('dotenv-extended').load()
 
 // Create server
@@ -18,6 +20,14 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 const adapter = new BotFrameworkAdapter({
   appId: process.env.MICROSOFT_APP_ID,
   appPassword: process.env.MICROSOFT_APP_PASSWORD
+})
+
+var sqlconn = mysql.createConnection({
+  host: 'localhost',
+  port: process.env.MYSQL_PORT,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE
 })
 
 // Add conversation state middleware
@@ -111,31 +121,45 @@ dialogs.add('searchPokemon', [
     }
   },
   async function (dc, result) {
-    await P.getPokemonSpeciesByName(result.toLowerCase()) // with Promise
-        .then(function (response) {
-          pokemonInfo.color = response.color.name
-          pokemonInfo.id = response.id
-          pokemonInfo.name_eng = response.name
-          pokemonInfo.habitat = response.habitat.name
+    console.log(result)
 
-          var nameobj = response.names.filter(function (obj) { return obj.language.name === 'ko' })
-          pokemonInfo.name_kor = nameobj[0].name
+    var datatype = ''
+    var param = []
 
-          var generaobj = response.genera.filter(function (obj) { return obj.language.name === 'ko' })
-          pokemonInfo.genera = generaobj[0].genus
+    if (isNumber(result)) {
+      datatype = 'id'
+      result = parseInt(result)
+    } else if (checkKorean(result)) {
+      datatype = 'name_kor'
+    } else {
+      datatype = 'name_eng'
+    }
 
-          return pokemonInfo
-        }).then(function (pokemonInfo) {
-          pokemonInfo.imageUrl_large = getLargeImgUrl(pokemonInfo.id)
-          const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imageUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genera, pokemonInfo.habitat, pokemonInfo.color))
-          console.log(dc.context.activity.channelId)
+    var sql = 'SELECT * FROM pokeinfo WHERE ' + datatype + '=?'
+    console.log(sql)
 
-          dc.context.sendActivity({type: ActivityTypes.Typing})
-          return dc.context.sendActivity({ attachments: [message] })
-          // }
-        }).catch(function (error) {
-          console.log('There was an ERROR: ', error)
-        })
+    param.push(result)
+    console.log(result)
+    // pre process user input
+
+    await mysql.createConnection({
+      host: 'localhost',
+      port: process.env.MYSQL_PORT,
+      user: process.env.MYSQL_USER,
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE
+    }).then(function (conn) {
+      return conn.query(sql, param)
+    }).then(function (result) {
+      console.log(dc.context.activity.channelId)
+
+      var pokemonInfo = result[0]
+      const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imgUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genra, 'hi', pokemonInfo.color))
+      dc.context.sendActivity({type: ActivityTypes.Typing})
+      return dc.context.sendActivity({ attachments: [message] })
+    }).catch(function (error) {
+      console.log('There was an ERROR: ', error)
+    })
     await dc.prompt('textPrompt', `검색하고 싶은 포켓몬 id를 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {
     if (result == '그만') {
@@ -214,3 +238,18 @@ dialogs.add('evolutionStage', [
     return dc.replace('evolutionStage', result)
   }
 ])
+
+function checkKorean (name) {
+  check = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/
+  if (check.test(name)) {
+    return true
+  }
+  return false
+}
+
+function isNumber (s) {
+  s += '' // 문자열로 변환
+  s = s.replace(/^\s*|\s*$/g, '') // 좌우 공백 제거
+  if (s == '' || isNaN(s)) return false
+  return true
+}

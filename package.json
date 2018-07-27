@@ -15,6 +15,7 @@
     "dotenv": "^2.0.0",
     "dotenv-extended": "^2.0.2",
     "pokedex-promise-v2": "^3.1.1",
+    "promise-mysql": "^3.3.1",
     "restify": "^4.3.4"
   },
   "devDependencies": {
