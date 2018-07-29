@@ -1,4 +1,4 @@
-module.exports = function createInfoCard (imgUrl, name_kor, id, name_eng, genera, habitat, color) {
+module.exports = function createInfoCard (imgUrl, name_kor, id, name_eng, genera, color) {
   var infoCard = {
     '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
     'type': 'AdaptiveCard',
@@ -50,15 +50,6 @@ module.exports = function createInfoCard (imgUrl, name_kor, id, name_eng, genera
                   {
                     'title': '종류:',
                     'value': genera
-                  }
-                ]
-              },
-              {
-                'type': 'FactSet',
-                'facts': [
-                  {
-                    'title': '서식지:',
-                    'value': habitat
                   }
                 ]
               },
