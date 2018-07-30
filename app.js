@@ -1,14 +1,12 @@
 const { BotFrameworkAdapter, MemoryStorage, ConversationState, MessageFactory, ActionTypes, CardFactory, ActivityTypes } = require('botbuilder')
-// const { ActivityTypes } = require('botbuilder-core')
 const restify = require('restify')
 const botbuilder_dialogs = require('botbuilder-dialogs')
 const dialogs = new botbuilder_dialogs.DialogSet()
 let infoCard = require('./cards/infoCard')
-// const getpokeinfo = require('./database/getpokeinfo')
+const getpokeinfo = require('./database/getpokeinfo')
 const utility = require('./utils/utility')
 const Pokedex = require('pokedex-promise-v2')
 const P = new Pokedex()
-const mysql = require('promise-mysql')
 require('dotenv-extended').load()
 
 // Create server
@@ -101,44 +99,10 @@ id의 경우 1~807 사이의 숫자를 입력해주세요!`)
     }
   },
   async function (dc, result) {
-    console.log(result)
-
-    var datatype = ''
-    var param = []
-
-    if (utility.isNumber(result)) {
-      datatype = 'id'
-      result = parseInt(result)
-    } else if (utility.checkKorean(result)) {
-      datatype = 'name_kor'
-    } else {
-      datatype = 'name_eng'
-    }
-
-    var sql = 'SELECT * FROM pokeinfo WHERE ' + datatype + '=?'
-    console.log(sql)
-
-    param.push(result)
-    console.log(result)
-    // pre process user input
-
-    await mysql.createConnection({
-      host: process.env.MYSQL_HOST,
-      port: process.env.MYSQL_PORT,
-      user: process.env.MYSQL_USER,
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE
-    }).then(function (conn) {
-      return conn.query(sql, param)
-    }).then(function (result) {
-      console.log(dc.context.activity.channelId)
-
-      var pokemonInfo = result[0]
+    await getpokeinfo(result).then((pokemonInfo) => {
       const message = CardFactory.adaptiveCard(infoCard(pokemonInfo.imgUrl_large, pokemonInfo.name_kor, pokemonInfo.id, pokemonInfo.name_eng, pokemonInfo.genra, pokemonInfo.color))
       dc.context.sendActivity({type: ActivityTypes.Typing})
       return dc.context.sendActivity({ attachments: [message] })
-    }).catch(function (error) {
-      console.log('There was an ERROR: ', error)
     })
     await dc.prompt('textPrompt', `검색하고 싶은 포켓몬 id 혹은 이름을 입력해주세요! 처음으로 돌아가시려면 '그만'을 입력해주세요`)
   }, async function (dc, result) {

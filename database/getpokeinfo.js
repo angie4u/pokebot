@@ -22,7 +22,7 @@ module.exports = function getPokeInfo (input) {
   console.log(input)
     // pre process user input
 
-  mysql.createConnection({
+  return mysql.createConnection({
     host: process.env.MYSQL_HOST,
     port: process.env.MYSQL_PORT,
     user: process.env.MYSQL_USER,
@@ -31,8 +31,6 @@ module.exports = function getPokeInfo (input) {
   }).then(function (conn) {
     return conn.query(sql, param)
   }).then(function (input) {
-      // console.log(dc.context.activity.channelId)
-
     var pokemonInfo = input[0]
     return pokemonInfo
   }).catch(function (error) {
